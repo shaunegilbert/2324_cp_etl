@@ -21,6 +21,8 @@ def get_parameter(parameter_name):
         # Get the parameter
         response = client.get_parameter(Name=parameter_name, WithDecryption=True)
         parameter = response['Parameter']['Value']
+        # Debug: Print the parameter value
+        print("Parameter value:", response['Parameter']['Value'])
     except ClientError as e:
         # Handle exceptions
         raise e
