@@ -32,9 +32,9 @@ def download_files(sftp, files, remote_directory, local_directory, prefix=""):
     data_directory = os.path.join(project_root, "data")
     raw_data_path = os.path.join(data_directory, "raw")
     
-    # Ensure the data/raw directory exists
-    if not os.path.exists(raw_data_path):
-        os.makedirs(raw_data_path)
+    # # Ensure the data/raw directory exists
+    # if not os.path.exists(raw_data_path):
+    #     os.makedirs(raw_data_path)
     
     for file in files:
         new_file_name = prefix + file
@@ -44,3 +44,12 @@ def download_files(sftp, files, remote_directory, local_directory, prefix=""):
 
 def close_connection(sftp):
     sftp.close()
+    
+def main():
+    load_credentials()
+    establish_sftp_connection()
+    fetch_files()
+    download_files()
+
+if __name__ == "__main__":
+    main()

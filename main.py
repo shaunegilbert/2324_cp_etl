@@ -5,9 +5,12 @@ from src.utils import sftp_util
 
 def main ():
     try:
-        sftp_util.download_files
+        sftp_read.main()
         
     except Exception as e:
         print("Error occurred:")
         traceback.print_exc()
         
+if __name__ == "__main__":
+    main()
+
