@@ -50,9 +50,6 @@ def convert_files_to_csv(files):
                 csv_writer.writerows(txt_reader)
 
             os.remove(txt_file_path)
-        
-
-
 
 def close_connection(sftp):
     sftp.close()
