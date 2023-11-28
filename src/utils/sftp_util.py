@@ -28,18 +28,20 @@ def fetch_files(sftp, directory, file_extension):
     return [file for file in files if file.endswith(file_extension)]
 
 def download_files(sftp, files, remote_directory, local_directory, prefix=""):
-    project_root = os.getenv('PROJECT_ROOT')
-    data_directory = os.path.join(project_root, "data")
-    raw_data_path = os.path.join(data_directory, "raw")
-    
-    # # Ensure the data/raw directory exists
-    # if not os.path.exists(raw_data_path):
-    #     os.makedirs(raw_data_path)
+    raw_data_path = os.path.expanduser(os.getenv('RAW_DATA_DIR'))
     
     for file in files:
         new_file_name = prefix + file
         local_file_path = os.path.join(raw_data_path, new_file_name)
+        
+        # Print the local file path to validate it
+        print(f"Downloading file: {file}")
+        print(f"Remote path: {remote_directory}/{file}")
+        print(f"Local path: {local_file_path}")
+        
         sftp.get(remote_directory + "/" + file, local_file_path)
+        
+
 
 
 def close_connection(sftp):
@@ -50,6 +52,7 @@ def main():
     establish_sftp_connection()
     fetch_files()
     download_files()
+    close_connection()
 
 if __name__ == "__main__":
     main()
