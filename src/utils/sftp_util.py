@@ -1,6 +1,7 @@
 import paramiko
 import os
 import json
+import csv
 from dotenv import load_dotenv
 from src.utils.get_param import get_parameter
 
@@ -34,12 +35,21 @@ def download_files(sftp, files, remote_directory, local_directory, prefix=""):
         new_file_name = prefix + file
         local_file_path = os.path.join(raw_data_path, new_file_name)
         
-        # Print the local file path to validate it
-        print(f"Downloading file: {file}")
-        print(f"Remote path: {remote_directory}/{file}")
-        print(f"Local path: {local_file_path}")
-        
         sftp.get(remote_directory + "/" + file, local_file_path)
+        
+def convert_files_to_csv(files):
+    for file in files:
+        if file.endswith('.txt'):
+            raw_data_path = os.path.expanduser(os.getenv('RAW_DATA_DIR'))
+            txt_file_path = os.path.join(raw_data_path, file)
+            csv_file_path = os.path.join(raw_data_path, os.path.splitext(file)[0] + ".csv")
+            
+            with open(txt_file_path, 'r') as txt_file, open(csv_file_path, 'w', newline='') as csv_file:
+                txt_reader = csv.reader(txt_file, delimiter='\t')
+                csv_writer = csv.writer(csv_file)
+                csv_writer.writerows(txt_reader)
+
+            os.remove(txt_file_path)
         
 
 
