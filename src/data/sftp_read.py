@@ -18,7 +18,7 @@ def ehps_pull():
     try:
         ehps_param = os.getenv('EHPS_SFTP_PARAM')
         ehps_remote = os.getenv('EHPS_REMOTE')
-        raw_data_path = os.getenv('RAW_DATA_DIR')
+        raw_data_path = os.path.join('data', 'raw')
         ehps_creds = load_credentials(ehps_param)
         ehps_sftp = establish_sftp_connection(ehps_creds)
         ehps_files = fetch_files(ehps_sftp, ehps_remote, '.txt')
@@ -36,7 +36,7 @@ def hps_pull():
     try:
         hps_param = os.getenv('HPS_SFTP_PARAM')
         hps_remote = os.getenv('HPS_REMOTE')
-        raw_data_path = os.getenv('RAW_DATA_DIR')
+        raw_data_path = os.path.join('data', 'raw')
         hps_creds = load_credentials(hps_param)
         hps_sftp = establish_sftp_connection(hps_creds)
         hps_files = fetch_files(hps_sftp, hps_remote, '.csv')

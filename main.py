@@ -1,14 +1,18 @@
 import logging
 import traceback
-from src.data import sftp_read
-from src.data import sheets_read
-import src.features.c3_wrangle
+from src.data import (sftp_read,
+                      sheets_read,
+                      sheets_write)
+from src.features import c3_wrangle
 
 def main ():
     try:
         sftp_read.main()
-        sheets_read.download_sa()
-        sheets_read.download_c3()
+        sheets_read.main()
+        c3_wrangle.main()
+        sheets_write.main()
+
+        
         
     except Exception as e:
         print("Error occurred:")
@@ -16,4 +20,3 @@ def main ():
         
 if __name__ == "__main__":
     main()
-

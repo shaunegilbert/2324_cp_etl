@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from src.utils.sheets_api_read import (get_google_sheets_service,
+from src.utils.sheets_api_util import (get_google_sheets_service,
                                        read_sheet, 
                                        save_sheet_as_csv)
 
@@ -22,3 +22,11 @@ def download_c3():
     
     if sheet_data:
         save_sheet_as_csv(sheet_data, 'c3_attendance.csv')
+
+def main():
+    # Call your functions here
+    download_sa()
+    download_c3()
+
+if __name__ == "__main__":
+    main()

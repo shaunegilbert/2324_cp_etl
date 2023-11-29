@@ -29,7 +29,7 @@ def fetch_files(sftp, directory, file_extension):
     return [file for file in files if file.endswith(file_extension)]
 
 def download_files(sftp, files, remote_directory, local_directory, prefix=""):
-    raw_data_path = os.path.expanduser(os.getenv('RAW_DATA_DIR'))
+    raw_data_path = os.path.join('data', 'raw')
     
     for file in files:
         new_file_name = prefix + file
@@ -40,7 +40,7 @@ def download_files(sftp, files, remote_directory, local_directory, prefix=""):
 def convert_files_to_csv(files):
     for file in files:
         if file.endswith('.txt'):
-            raw_data_path = os.path.expanduser(os.getenv('RAW_DATA_DIR'))
+            raw_data_path = os.path.join('data', 'raw')
             txt_file_path = os.path.join(raw_data_path, file)
             csv_file_path = os.path.join(raw_data_path, os.path.splitext(file)[0] + ".csv")
             
