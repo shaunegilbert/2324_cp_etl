@@ -8,7 +8,8 @@ load_dotenv()
 
 # Set up a specific profile from your AWS config
 profile_name = os.environ.get('AWS_PROFILE_NAME')
-boto3.setup_default_session(profile_name=profile_name)
+if profile_name:
+    boto3.setup_default_session(profile_name=profile_name)
 
 # Function to fetch parameters from AWS Systems Manager Parameter Store
 def get_parameter(parameter_name):

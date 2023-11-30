@@ -1,9 +1,9 @@
 cc_template
 ==============================
 
-cookie cutter for data science template 
+aws sso login --profile name
+sudo hwclock -s
 
-Project Organization
 ------------
 
     ├── LICENSE
