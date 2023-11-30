@@ -1,5 +1,6 @@
 import pandas as pd
 import logging
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -10,7 +11,10 @@ def process_c3_attendance_data():
 
         # Define input and output file paths
         input_path = '~/dev/2324_cp_etl/data/raw/c3_attendance.csv'
+        input_path = os.path.join('data', 'raw', 'c3_attendance.csv')
         output_path = '~/dev/2324_cp_etl/data/processed/c3_processed.csv'
+        output_path = os.path.join('data', 'processed', 'c3_processed.csv')
+
 
         # Load data into a DataFrame
         df = pd.read_csv(input_path)
