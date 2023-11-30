@@ -11,7 +11,7 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Define environment variable
-ENV NAME World
+ENV NAME venv
 
 # Run main.py when the container launches
-CMD ["python", "main.py"]
+CMD ["python3", "main.py"]
