@@ -10,9 +10,9 @@ def process_c3_attendance_data():
         logging.info('Starting the data processing for C3 attendance.')
 
         # Define input and output file paths
-        input_path = '~/dev/2324_cp_etl/data/raw/c3_attendance.csv'
+        # input_path = '~/dev/2324_cp_etl/data/raw/c3_attendance.csv'
         input_path = os.path.join('data', 'raw', 'c3_attendance.csv')
-        output_path = '~/dev/2324_cp_etl/data/processed/c3_processed.csv'
+        # output_path = '~/dev/2324_cp_etl/data/processed/c3_processed.csv'
         output_path = os.path.join('data', 'processed', 'c3_processed.csv')
 
 
