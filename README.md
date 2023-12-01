@@ -3,6 +3,9 @@ cc_template
 
 aws sso login --profile name
 sudo hwclock -s
+eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_rsa
+
 
 ------------
 
