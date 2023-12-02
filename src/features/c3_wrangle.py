@@ -22,8 +22,6 @@ def process_c3_attendance_data():
         # Create a DataFrame with unique gt_ids
         unique_gt_ids = df[['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory', 'Linked field: gt_id']].fillna('NaN').drop_duplicates()
         
-        print(unique_gt_ids)
-
         # Pivot the table for attendance
         attendance_pivot = df.pivot_table(
             index=['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory'],
