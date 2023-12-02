@@ -20,7 +20,9 @@ def process_c3_attendance_data():
         df = pd.read_csv(input_path)
 
         # Create a DataFrame with unique gt_ids
-        unique_gt_ids = df[['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory', 'Linked field: gt_id']].drop_duplicates()
+        unique_gt_ids = df[['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory', 'Linked field: gt_id']].fillna('NaN').drop_duplicates()
+        
+        print(unique_gt_ids)
 
         # Pivot the table for attendance
         attendance_pivot = df.pivot_table(
@@ -29,6 +31,8 @@ def process_c3_attendance_data():
             values='Linked field: gt_id',
             aggfunc=lambda x: 'Y' if len(x) > 0 else ''
         )
+        
+        # print(attendance_pivot)
 
         # Reset index to turn multi-index into columns
         attendance_pivot.reset_index(inplace=True)

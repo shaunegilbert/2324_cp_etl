@@ -5,6 +5,8 @@ aws sso login --profile name
 sudo hwclock -s
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
+docker build -t dockerfile .
+docker run -p 4000:80 dockerfile
 
 
 ------------
