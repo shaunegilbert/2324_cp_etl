@@ -37,6 +37,11 @@ def process_c3_attendance_data():
 
         # Merge with unique gt_ids DataFrame
         final_table = pd.merge(unique_gt_ids, attendance_pivot, on=['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory'])
+        
+        # Calculate attendance percentage
+        # Assuming columns E to N are for attendance, adjust indices as needed
+        attendance_columns = final_table.columns[4:14]  # Adjust the indices to match your columns E to N
+        final_table['Attendance_Percentage'] = final_table[attendance_columns].apply(lambda row: sum(row == 'Y') / len(attendance_columns), axis=1)
 
         # Save the processed data
         final_table.to_csv(output_path, index=False)
