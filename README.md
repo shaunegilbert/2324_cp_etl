@@ -5,8 +5,38 @@ aws sso login --profile name
 sudo hwclock -s
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
-docker build -t dockerfile .
-docker run -p 4000:80 dockerfile
+docker build -f Dockerfile.cp_etl -t cp_etl_image .
+
+# This Docker command is used to run a container from an image, while also mounting AWS credentials into it.
+
+# docker run: This command is used to create and start a container from a Docker image.
+
+# -v ~/.aws:/root/.aws: 
+# - '-v' flag is used for volume mounting. It mounts a volume from the host to the container.
+# - '~/.aws' is the directory on the host machine that contains AWS credentials and configuration files.
+# - '/root/.aws' is the target path inside the container where the host's AWS configuration will be mounted.
+# This volume mounting ensures that the AWS credentials and configuration files are accessible inside the container, 
+# allowing Boto3 or AWS CLI inside the container to use these credentials.
+
+# --name cp_etl_container: 
+# - '--name' flag assigns a name to the running container. In this case, the container will be named 'cp_etl_container'.
+# Naming containers is useful for identifying and managing them, especially when dealing with multiple containers.
+
+# cp_etl_image: 
+# This is the name of the Docker image that the container will be created from. 
+# 'cp_etl_image' should be an image that you have previously built, which contains your ETL application.
+
+# Executing this command will start the 'cp_etl_container' container and mount the host's AWS credentials inside it,
+# enabling the application within the container to access AWS services using these credentials.
+
+# aws command probably won't be needed in prod
+
+# run it detached (-d) then when you run start command it will work
+docker run -d -v ~/.aws:/root/.aws --name cp_etl_container cp_etl_image
+
+# start existing container
+docker start cp_etl_container
+
 
 
 ------------
