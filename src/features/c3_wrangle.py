@@ -20,11 +20,17 @@ def process_c3_attendance_data():
         df = pd.read_csv(input_path)
 
         # Create a DataFrame with unique gt_ids
-        unique_gt_ids = df[['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory', 'Linked field: gt_id']].fillna('NaN').drop_duplicates()
+        unique_gt_ids = df[['Linked field: Workspace number', 
+                            'Linked field: Name', 
+                            'Linked field: Subcategory', 
+                            'Linked field: gt_id',
+                            'Linked field: Pathways 23-24']].fillna('NaN').drop_duplicates()
         
         # Pivot the table for attendance
         attendance_pivot = df.pivot_table(
-            index=['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory'],
+            index=['Linked field: Workspace number', 
+                   'Linked field: Name', 
+                   'Linked field: Subcategory'],
             columns='C3 Lesson Topic',
             values='Linked field: gt_id',
             aggfunc=lambda x: 'Y' if len(x) > 0 else ''
