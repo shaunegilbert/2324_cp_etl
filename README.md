@@ -5,7 +5,27 @@ aws sso login --profile name
 sudo hwclock -s
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
-docker build -f Dockerfile.cp_etl -t cp_etl_image .
+
+# setting up new docker container to run updated code
+
+# 1 build new image
+docker build -f Dockerfile.cp_etl -t cp_etl_image:tag .
+
+# 2 stop existing container
+docker stop cp_etl_container
+
+# 3 remove old docker container
+docker rm cp_etl_container
+
+# 4 run new container with new image
+docker run --name cp_etl_container cp_etl_image:tag
+
+# 5 cleanup old image
+docker rmi old-image-name:old-tag
+
+# 6 clean up old images
+docker image prune -a
+
 
 # This Docker command is used to run a container from an image, while also mounting AWS credentials into it.
 
