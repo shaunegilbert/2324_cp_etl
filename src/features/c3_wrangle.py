@@ -14,8 +14,8 @@ def process_c3_attendance_data():
         input_path = os.path.join('data', 'raw', 'c3_attendance.csv')
         # output_path = '~/dev/2324_cp_etl/data/processed/c3_processed.csv'
         output_path = os.path.join('data', 'processed', 'c3_processed.csv')
-        #output path for interim c3 data
-        output_path_interim = os.path.join('data', 'interim', 'c3_interim.csv')
+        # #output path for interim c3 data
+        # output_path_interim = os.path.join('data', 'interim', 'c3_interim.csv')
 
 
         # Load data into a DataFrame
@@ -45,7 +45,7 @@ def process_c3_attendance_data():
 
         # Merge with unique gt_ids DataFrame
         final_table = pd.merge(unique_gt_ids, attendance_pivot, on=['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory'])
-        final_table.to_csv (output_path_interim, index=False)
+        # final_table.to_csv (output_path_interim, index=False)
         
         # Calculate attendance percentage
         # Assuming columns E to N are for attendance, adjust indices as needed
