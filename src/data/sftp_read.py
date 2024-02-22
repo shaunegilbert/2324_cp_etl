@@ -31,6 +31,7 @@ def ehps_pull():
     except Exception as e:
         print(f'Failed: {str(e)}')
         traceback.print_exc()  # This will print the traceback
+        raise
 
 def hps_pull():
     try:
@@ -47,10 +48,16 @@ def hps_pull():
     except Exception as e:
         print(f'Failed: {str(e)}')
         traceback.print_exc()  # This will print the traceback
+        raise
     
 def main():
-    ehps_pull()
-    hps_pull()
+    try:
+        ehps_pull()
+        hps_pull()
+        
+    except Exception as e:
+        print("Handling error in main: stopping the script")
+        raise  # Re-raise the exception
 
 if __name__ == "__main__":
     main()

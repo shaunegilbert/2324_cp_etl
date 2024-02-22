@@ -58,10 +58,15 @@ def process_c3_attendance_data():
 
     except Exception as e:
         logging.error(f'Error during data processing: {e}')
+        raise
 
 def main():
-    # Call your functions here
-    process_c3_attendance_data()
+    try:
+        # Call your functions here
+        process_c3_attendance_data()
+    except Exception as e:
+        print("Handling error in main: stopping the script")
+        raise  # Re-raise the exception
     
 if __name__ == "__main__":
     main()
