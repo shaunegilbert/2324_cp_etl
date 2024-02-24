@@ -153,8 +153,6 @@ if __name__ == "__main__":
     hps_students_interim.to_csv(output_file_path, index=False)
     logging.info(f"Processed DataFrame has been written to {output_file_path}")
     
-    ##########
-    
     # Processing the second file: jaws_students.csv
         # subset columns and write subset to data/interim/jaws_students_interim.csv
     jaws_students_info = ('raw', 'jaws_students.csv')
@@ -186,7 +184,7 @@ if __name__ == "__main__":
     wbl_counts.to_csv(output_file_path, index=False)
     logging.info(f"Processed DataFrame has been written to {output_file_path}")
 
-
+    # processed fourth file: subsetting c3 percentage and gt_id
     c3_info = ('processed', 'c3_processed.csv')
     c3_file_path = os.path.join(base_dirs[c3_info[0]], c3_info[1])
     c3_columns = ['Linked field: gt_id', 'Attendance_Percentage']
@@ -196,3 +194,5 @@ if __name__ == "__main__":
     output_file_path = os.path.join(base_dirs['interim'], 'c3_percentage.csv')
     c3_df.to_csv(output_file_path, index=False)
     logging.info(f"Processed DataFrame has been written to {output_file_path}")
+
+# processed fifth file
