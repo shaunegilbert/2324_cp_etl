@@ -25,7 +25,13 @@ def read_csv_column(file_path, columns):
         logging.error(f"Error reading {file_path}: {e}")
         return pd.DataFrame()
 
-def process_dataframe(df, processing_steps, id_column=None, additional_data=None, rename_columns=None, new_col_name=None, new_col_value=None, concat_columns=None):
+def process_dataframe(df, processing_steps, 
+                      id_column=None, 
+                      rename_columns=None, 
+                      new_col_name=None, 
+                      new_col_value=None, 
+                      concat_columns=None, 
+                      occurence_col_name=None):
     """
     Processes the DataFrame for necessary transformations or calculations.
     
@@ -52,7 +58,15 @@ def process_dataframe(df, processing_steps, id_column=None, additional_data=None
         df['gt_id'] = df[concat_columns].apply(lambda row: ''.join(row.values.astype(str)), axis=1)
     
     if 'count_occurrences' in processing_steps and id_column:
-        df['event_count'] = df.groupby(id_column)[id_column].transform('count')
+        # This checks if id_column is present, then creates a summary DataFrame
+        if id_column in df.columns:
+            count_df = df[id_column].value_counts().reset_index()
+            count_df.columns = [id_column, occurence_col_name]  # Rename columns appropriately
+            df = count_df
+        else:
+            logging.warning(f"{id_column} column not found in DataFrame for counting occurrences.")
+            df = pd.DataFrame(columns=[id_column, 'occurrence_count'])  # Return an empty DataFrame with the expected columns if id_column is missing
+    
         
     
     
@@ -129,8 +143,8 @@ if __name__ == "__main__":
     new_col_value = 'hps'
     concat_columns = ['district_code', 'id']
     
-    df = read_csv_column(hps_students_file_path, hps_students_columns)
-    processed_df = process_dataframe(df, hps_students_processing_steps,
+    hps_students_df = read_csv_column(hps_students_file_path, hps_students_columns)
+    hps_students_interim = process_dataframe(hps_students_df, hps_students_processing_steps,
                                      id_column='id',
                                      rename_columns=rename_columns,
                                      new_col_name=new_col_name,
@@ -138,7 +152,7 @@ if __name__ == "__main__":
                                      concat_columns=concat_columns)
     
     output_file_path = os.path.join(base_dirs['interim'], 'ps_hps_students_interim.csv')
-    processed_df.to_csv(output_file_path, index=False)
+    hps_students_interim.to_csv(output_file_path, index=False)
     logging.info(f"Processed DataFrame has been written to {output_file_path}")
     
     ##########
@@ -147,7 +161,10 @@ if __name__ == "__main__":
         # subset columns and write subset to data/interim/jaws_students_interim.csv
     jaws_students_info = ('raw', 'jaws_students.csv')
     jaws_students_file_path = os.path.join(base_dirs[jaws_students_info[0]], jaws_students_info[1])
-    jaws_students_columns = ['Workspace Name', 'gt_id', 'Subcategory', '23-24 CP Student Agreement', 'Pathways 23-24']
+    jaws_students_columns = ['Workspace Name', 
+                             'gt_id', 'Subcategory', 
+                             '23-24 CP Student Agreement', 
+                             'Pathways 23-24']
     
     jaws_students_interim = read_csv_column(jaws_students_file_path, jaws_students_columns)
     
@@ -155,5 +172,25 @@ if __name__ == "__main__":
     jaws_students_interim.to_csv(jaws_students_interim_output_file_path, index=False)
     logging.info(f"Additional processed DataFrame has been written to {jaws_students_interim_output_file_path}")
     
-    # processing third file: 
+    # processing third file:
+    wbl_info = ('raw', 'jaws_wbl.csv')
+    wbl_file_path = os.path.join(base_dirs[wbl_info[0]], wbl_info[1])
+    wbl_columns = ['Linked field: gt_id']
+    wbl_processing_steps = ['count_occurences']
+    
+    # rename_columns= {'Linked field: gt_id': 'gt_id'}
+    
+    wbl_processing_steps = ['count_occurrences', 'rename_columns']  # Ensure this step is correctly defined
 
+    wbl_df = read_csv_column(wbl_file_path, wbl_columns)
+    wbl_counts = process_dataframe(wbl_df, wbl_processing_steps,
+                               id_column='Linked field: gt_id',
+                               occurence_col_name='WBL_count',
+                               )  # Use the correct column name
+
+    output_file_path = os.path.join(base_dirs['interim'], 'wbl_counts.csv')
+    wbl_counts.to_csv(output_file_path, index=False)
+    logging.info(f"Processed DataFrame has been written to {output_file_path}")
+
+
+    
