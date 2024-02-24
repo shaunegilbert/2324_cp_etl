@@ -53,6 +53,8 @@ def process_dataframe(df, processing_steps, id_column=None, additional_data=None
     
     if 'count_occurrences' in processing_steps and id_column:
         df['event_count'] = df.groupby(id_column)[id_column].transform('count')
+        
+    
     
     # Include other processing steps as necessary
     
@@ -104,59 +106,54 @@ def process_dataframe(df, processing_steps, id_column=None, additional_data=None
 #     return merged_df
 
 
+import logging
+import os
+
+# Assuming the definition of read_csv_column and process_dataframe functions are above
+
 if __name__ == "__main__":
     base_dirs = {
         'raw': 'data/raw', 
         'processed': 'data/processed',
-        'interim': 'data/interim'  # Adding interim directory
+        'interim': 'data/interim'
     }
     
-    # Ensure the interim directory exists
-    os.makedirs(base_dirs['interim'], exist_ok=True)
-    
-    csv_files_info = [('raw', 'students.csv')]
-    file_paths = [os.path.join(base_dirs[dir], filename) for dir, filename in csv_files_info]
-    
-    # Note: Adjust 'columns' if other columns are needed for processing
-    columns = {file_paths[0]: ['STUDENT_NUMBER', 'COHORTYR']}
-    
-    processing_steps = {
-        file_paths[0]: ['add_constant_column', 'concatenate_id']
-    }
+    # Processing the first file: students.csv
+    hps_students_info = ('raw', 'students.csv')
+    hps_students_file_path = os.path.join(base_dirs[hps_students_info[0]], hps_students_info[1])
+    hps_students_columns = ['STUDENT_NUMBER', 'COHORTYR']
+    hps_students_processing_steps = ['add_constant_column', 'concatenate_id']
     
     rename_columns = {'STUDENT_NUMBER': 'id', 'COHORTYR': 'cohort_year'}
     new_col_name = 'district_code'
     new_col_value = 'hps'
     concat_columns = ['district_code', 'id']
     
-    df = read_csv_column(file_paths[0], columns[file_paths[0]])
-    processed_df = process_dataframe(df, processing_steps[file_paths[0]],
-                                     id_column='id',  # Adjusted to match the renamed column
+    df = read_csv_column(hps_students_file_path, hps_students_columns)
+    processed_df = process_dataframe(df, hps_students_processing_steps,
+                                     id_column='id',
                                      rename_columns=rename_columns,
                                      new_col_name=new_col_name,
                                      new_col_value=new_col_value,
                                      concat_columns=concat_columns)
     
-    # Write the processed DataFrame to a CSV file in the 'data/interim' directory
-    output_file_path = os.path.join(base_dirs['interim'], 'processed_ps_students.csv')
+    output_file_path = os.path.join(base_dirs['interim'], 'ps_hps_students_interim.csv')
     processed_df.to_csv(output_file_path, index=False)
     logging.info(f"Processed DataFrame has been written to {output_file_path}")
     
-    # Example for processing and writing another DataFrame (commented out)
-    additional_csv_info = ('processed', 'another_file.csv')
-    additional_file_path = os.path.join(base_dirs[additional_csv_info[0]], additional_csv_info[1])
-    additional_columns = ['AnotherColumn1', 'AnotherColumn2']
-    additional_processing_steps = ['AnotherProcessingStep']
+    ##########
     
-    additional_df = read_csv_column(additional_file_path, additional_columns)
-    additional_processed_df = process_dataframe(additional_df, additional_processing_steps,
-                                                 id_column='AnotherIDColumn',
-                                                 rename_columns={'AnotherColumn1': 'RenamedColumn1'},
-                                                 new_col_name='NewColumnName',
-                                                 new_col_value='NewColumnValue',
-                                                 concat_columns=['NewColumnName', 'AnotherIDColumn'])
+    # Processing the second file: jaws_students.csv
+        # subset columns and write subset to data/interim/jaws_students_interim.csv
+    jaws_students_info = ('raw', 'jaws_students.csv')
+    jaws_students_file_path = os.path.join(base_dirs[jaws_students_info[0]], jaws_students_info[1])
+    jaws_students_columns = ['Workspace Name', 'gt_id', 'Subcategory', '23-24 CP Student Agreement', 'Pathways 23-24']
     
-    additional_output_file_path = os.path.join(base_dirs['interim'], 'additional_processed_file.csv')
-    additional_processed_df.to_csv(additional_output_file_path, index=False)
-    logging.info(f"Additional processed DataFrame has been written to {additional_output_file_path}")
+    jaws_students_interim = read_csv_column(jaws_students_file_path, jaws_students_columns)
+    
+    jaws_students_interim_output_file_path = os.path.join(base_dirs['interim'], 'jaws_students_interim.csv')
+    jaws_students_interim.to_csv(jaws_students_interim_output_file_path, index=False)
+    logging.info(f"Additional processed DataFrame has been written to {jaws_students_interim_output_file_path}")
+    
+    # processing third file: 
 

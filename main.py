@@ -20,7 +20,7 @@ def main ():
         
         # Send a success email
         send_email('shaune.gilbert@readyct.org', 'CP ETL Script Execution Successful', 'The CP ETL script ran successfully.')
-        # print ('success')
+        print ('success')
 
         
         
@@ -29,7 +29,7 @@ def main ():
 
         # Send an error email
         send_email('shaune.gilbert@readyct.org', 'CP ETL Script Execution Failed', f"The CP ETL script failed to run. Error: {str(e)}")
-        # print('error')
+        print('error')
         sys.exit(1)
         
 if __name__ == "__main__":
