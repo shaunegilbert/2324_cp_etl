@@ -172,16 +172,12 @@ if __name__ == "__main__":
     jaws_students_interim.to_csv(jaws_students_interim_output_file_path, index=False)
     logging.info(f"Additional processed DataFrame has been written to {jaws_students_interim_output_file_path}")
     
-    # processing third file:
+    # processing third file: JAWS WBL
     wbl_info = ('raw', 'jaws_wbl.csv')
     wbl_file_path = os.path.join(base_dirs[wbl_info[0]], wbl_info[1])
     wbl_columns = ['Linked field: gt_id']
     wbl_processing_steps = ['count_occurences']
     
-    # rename_columns= {'Linked field: gt_id': 'gt_id'}
-    
-    wbl_processing_steps = ['count_occurrences', 'rename_columns']  # Ensure this step is correctly defined
-
     wbl_df = read_csv_column(wbl_file_path, wbl_columns)
     wbl_counts = process_dataframe(wbl_df, wbl_processing_steps,
                                id_column='Linked field: gt_id',
@@ -193,4 +189,12 @@ if __name__ == "__main__":
     logging.info(f"Processed DataFrame has been written to {output_file_path}")
 
 
+    c3_info = ('processed', 'c3_processed.csv')
+    c3_file_path = os.path.join(base_dirs[c3_info[0]], c3_info[1])
+    c3_columns = ['Linked field: gt_id', 'Attendance_Percentage']
     
+    c3_df = read_csv_column(c3_file_path, c3_columns)
+    
+    output_file_path = os.path.join(base_dirs['interim'], 'c3_percentage.csv')
+    c3_df.to_csv(output_file_path, index=False)
+    logging.info(f"Processed DataFrame has been written to {output_file_path}")
