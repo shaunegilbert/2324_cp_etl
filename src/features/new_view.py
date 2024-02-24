@@ -44,6 +44,7 @@ def process_dataframe(df, processing_steps,
     - new_col_name: str, the name of the new column to add with a constant value (optional).
     - new_col_value: str, the constant value for the new column (optional).
     - concat_columns: list, the columns to concatenate to create a new ID (optional).
+    - occurence_col_name: str, name of the column for the counts; name in the function below
     
     Returns:
     - The processed DataFrame.
@@ -119,9 +120,6 @@ def process_dataframe(df, processing_steps,
 #             merged_df = merge_dataframes(merged_df, processed_df, on='unique_id')
 #     return merged_df
 
-
-import logging
-import os
 
 # Assuming the definition of read_csv_column and process_dataframe functions are above
 
