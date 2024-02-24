@@ -39,10 +39,32 @@ def main():
         jaws_id = os.getenv('JAWS_ID')
         jaws_range_name = os.getenv('JAWS_RANGE')
         download_sheet_as_csv(jaws_id, jaws_range_name, 'jaws_students.csv')
+        
+        # C3 Attendance Sheet
+        jaws_wbl_id = os.getenv('JAWS_WBL_ID')
+        jaws_wbl_range_name = os.getenv('JAWS_WBL_RANGE')
+        download_sheet_as_csv(jaws_wbl_id, jaws_wbl_range_name, 'jaws_wbl.csv')
+        
+        #Internships sheets
+        int_id = os.getenv('JAWS_INT_ID')
+        int_range = os.getenv('JAWS_INT_RANGE')
+        download_sheet_as_csv(int_id, int_range, 'internships.csv')
+        
+        #check-in report from JAWS
+        check_id = os.getenv('CHECK_ID')
+        check_range = os.getenv('CHECK_RANGE')
+        download_sheet_as_csv(check_id, check_range, 'check_in.csv')
+        
+        #cert report from JAWS
+        cert_id = os.getenv('CERT_ID')
+        cert_range = os.getenv('CERT_RANGE')
+        download_sheet_as_csv(cert_id, cert_range, 'cert.csv')
 
     except Exception as e:
         print("Handling error in main: stopping the script")
         traceback.print_exc()
+        raise
+        
 
 if __name__ == "__main__":
     main()
