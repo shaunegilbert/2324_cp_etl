@@ -161,14 +161,33 @@ def main ():
         c3_df_processed.to_csv(output_file_path, index=False)
         logging.info(f"Processed DataFrame has been written to {output_file_path}")
         
-        # processed fifth file:
+        # processed fifth file: check ins
+        check_in_info = ('raw', 'check_in.csv')
+        check_in_file_path=wbl_file_path = os.path.join(base_dirs[check_in_info[0]], check_in_info[1])
+        check_in_columns=['Linked field: gt_id'
+                          ]
+        check_in_processing_steps=['standardize_id_col',
+                                   'count_occurrences'
+                                   ]
         
+        standardize_id_mapping= {'Linked field: gt_id': 'gt_id'}
+        
+        check_in_df =read_csv_column(check_in_file_path, check_in_columns)
+        check_in_counts=process_dataframe(check_in_df, check_in_processing_steps,
+                                          standardize_id_col=standardize_id_mapping,
+                                          id_column='Linked field: gt_id',
+                                          occurence_col_name='Check_in_count')
+
+        output_file_path = os.path.join(base_dirs['interim'], 'check_in_counts.csv')
+        check_in_counts.to_csv(output_file_path, index=False)
+        logging.info(f"Processed DataFrame has been written to {output_file_path}")
         
         # final output file with all fields pulled from other data sources
         merged_df = pd.merge(jaws_students_interim, wbl_counts, on='gt_id', how='left')
         
-        print(merged_df)
-        final_view = pd.merge(merged_df, c3_df_processed, on='gt_id', how='left')
+        merged_df2 = pd.merge(merged_df, check_in_counts, on='gt_id', how='left')
+        
+        final_view = pd.merge(merged_df2, c3_df_processed, on='gt_id', how='left')
         
         # Final merged DataFrame
         final_output_path = os.path.join(base_dirs['processed'], 'final_merged_view.csv')
