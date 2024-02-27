@@ -125,14 +125,30 @@ def process_cert(base_dirs):
     logging.info(f"Check-in DataFrame has been written to {output_file_path}")
     return df
 
-def merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, cert_df, check_in_df):
+def process_internships(base_dirs):
+    '''
+    Process the internships_interim.csv
+    '''
+    file_path = os.path.join(base_dirs['raw'], 'internships.csv')
+    columns = ['Linked field: gt_id']
+    standardize_map = {'Linked field: gt_id': 'gt_id'}
+    df = read_csv_column(file_path, columns)
+    df = standardize_id_col(df, standardize_map)
+    df = count_occurrences(df, 'gt_id', 'internship_count')
+    output_file_path = os.path.join(base_dirs['interim'], 'internships_count.csv')
+    df.to_csv(output_file_path, index=False)
+    logging.info(f"Check-in DataFrame has been written to {output_file_path}")
+    return df
+
+def merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, cert_df, internship_df,  check_in_df):
     """
     Merges all processed DataFrames and writes the final merged DataFrame to csv.
     """
     merged_df = pd.merge(jaws_students_df, wbl_df, on='gt_id', how='left')
     merged_df = pd.merge(merged_df, check_in_df, on='gt_id', how='left')
     merged_df = pd.merge(merged_df, cert_df, on='gt_id', how='left')
-    final_view = pd.merge(merged_df, c3_df, on='gt_id', how='left')
+    merged_df= pd.merge(merged_df, c3_df, on='gt_id', how='left')
+    final_view = pd.merge(merged_df, internship_df, on='gt_id', how='left')
     final_output_path = os.path.join(base_dirs['processed'], 'final_merged_view.csv')
     final_view.to_csv(final_output_path, index=False)
     logging.info(f"Final merged DataFrame has been written to {final_output_path}")
@@ -151,9 +167,10 @@ def main():
         c3_df = process_c3(base_dirs)
         check_in_df = process_check_in(base_dirs)
         cert_df=process_cert(base_dirs)
+        internship_df=process_internships(base_dirs)
 
         # Merge all processed DataFrames
-        merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, cert_df, check_in_df)
+        merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, cert_df, internship_df, check_in_df)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
