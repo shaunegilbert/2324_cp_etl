@@ -83,7 +83,7 @@ def process_wbl(base_dirs):
 
 def process_c3(base_dirs):
     """
-    Processes the c3_processed.csv file.
+    Processes the c3_percentage.csv file.
     """
     file_path = os.path.join(base_dirs['processed'], 'c3_processed.csv')
     columns = ['Linked field: gt_id', 'Attendance_Percentage']
@@ -110,12 +110,28 @@ def process_check_in(base_dirs):
     logging.info(f"Check-in DataFrame has been written to {output_file_path}")
     return df
 
-def merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, check_in_df):
+def process_cert(base_dirs):
+    '''
+    Process the cert_interim.csv
+    '''
+    file_path = os.path.join(base_dirs['raw'], 'cert.csv')
+    columns = ['Linked field: gt_id']
+    standardize_map = {'Linked field: gt_id': 'gt_id'}
+    df = read_csv_column(file_path, columns)
+    df = standardize_id_col(df, standardize_map)
+    df = count_occurrences(df, 'gt_id', 'cert_count')
+    output_file_path = os.path.join(base_dirs['interim'], 'cert_counts.csv')
+    df.to_csv(output_file_path, index=False)
+    logging.info(f"Check-in DataFrame has been written to {output_file_path}")
+    return df
+
+def merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, cert_df, check_in_df):
     """
     Merges all processed DataFrames and writes the final merged DataFrame to csv.
     """
     merged_df = pd.merge(jaws_students_df, wbl_df, on='gt_id', how='left')
     merged_df = pd.merge(merged_df, check_in_df, on='gt_id', how='left')
+    merged_df = pd.merge(merged_df, cert_df, on='gt_id', how='left')
     final_view = pd.merge(merged_df, c3_df, on='gt_id', how='left')
     final_output_path = os.path.join(base_dirs['processed'], 'final_merged_view.csv')
     final_view.to_csv(final_output_path, index=False)
@@ -134,9 +150,10 @@ def main():
         wbl_df = process_wbl(base_dirs)
         c3_df = process_c3(base_dirs)
         check_in_df = process_check_in(base_dirs)
+        cert_df=process_cert(base_dirs)
 
         # Merge all processed DataFrames
-        merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, check_in_df)
+        merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, cert_df, check_in_df)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")

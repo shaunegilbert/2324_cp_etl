@@ -6,6 +6,8 @@ import sys
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
+# script to merge ehps data from Synergy and EHHS data sets. 
+
 def merge_ehps_data ():
     try:
         logging.info('Starting merge for EHPS schools')

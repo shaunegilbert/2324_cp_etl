@@ -6,15 +6,18 @@ from src.data import (sftp_read,
                       sheets_write,
                       write_to_s3)
 from src.features import (c3_wrangle, 
-                          ehps_wrangle)
+                          ehps_wrangle,
+                          new_view)
 from src.utils.send_email import send_email
 
 def main ():
     try:
-        # sftp_read.main()
+        sftp_read.main()
         sheets_read.main()
-        # c3_wrangle.main()
-        # ehps_wrangle.main()
+        c3_wrangle.main()
+        ehps_wrangle.main()
+        new_view.main()
+        
         # sheets_write.main()
         # write_to_s3.main()
         
