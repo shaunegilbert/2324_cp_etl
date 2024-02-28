@@ -149,7 +149,7 @@ def merge_dataframes(base_dirs, jaws_students_df, wbl_df, c3_df, cert_df, intern
     merged_df = pd.merge(merged_df, cert_df, on='gt_id', how='left')
     merged_df= pd.merge(merged_df, c3_df, on='gt_id', how='left')
     final_view = pd.merge(merged_df, internship_df, on='gt_id', how='left')
-    final_output_path = os.path.join(base_dirs['processed'], 'final_merged_view.csv')
+    final_output_path = os.path.join(base_dirs['processed'], 'student_kpi_view.csv')
     final_view.to_csv(final_output_path, index=False)
     logging.info(f"Final merged DataFrame has been written to {final_output_path}")
 
