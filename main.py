@@ -8,6 +8,7 @@ from src.data import (sftp_read,
 from src.features import (c3_wrangle, 
                           ehps_wrangle,
                           student_kpi_view)
+from src.utils import del_csv
 from src.utils.send_email import send_email
 
 def main ():
@@ -19,6 +20,7 @@ def main ():
         student_kpi_view.main()
         sheets_write.main()
         write_to_s3.main()
+        del_csv.main()
         
         # Send a success email
         send_email('shaune.gilbert@readyct.org', 'CP ETL Script Execution Successful', 'The CP ETL script ran successfully.')
