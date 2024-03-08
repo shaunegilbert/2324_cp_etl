@@ -60,6 +60,11 @@ def main():
         cert_range = os.getenv('CERT_RANGE')
         download_sheet_as_csv(cert_id, cert_range, 'cert.csv')
 
+        #coursework google sheet
+        coursework_id = os.getenv('COURSEWORK_ID')
+        coursework_range = os.getenv('COURSEWORK_RANGE')
+        download_sheet_as_csv(coursework_id, coursework_range, 'course_codes.csv')
+
     except Exception as e:
         print("Handling error in main: stopping the script")
         traceback.print_exc()
