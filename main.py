@@ -26,8 +26,6 @@ def main ():
         # send_email('shaune.gilbert@readyct.org', 'CP ETL Script Execution Successful', 'The CP ETL script ran successfully.')
         print ('success')
 
-        
-        
     except Exception as e:
         logging.error(f"Script failed to run. Error: {str(e)}")
 

@@ -120,8 +120,7 @@ def main():
         base_dirs = {
             'raw': 'data/raw',
             'processed': 'data/processed',
-            'interim': 'data/interim'
-        }
+            'interim': 'data/interim'}
 
         #process individual datasets
         pull_students_sub (base_dirs)
