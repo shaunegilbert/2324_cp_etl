@@ -39,9 +39,6 @@ def read_sheet(spreadsheet_id, range_name, service):
         result = sheet.values().get(spreadsheetId=spreadsheet_id, range=range_name).execute()
         values = result.get('values', [])
 
-        # # Print the raw values for debugging
-        # print("Raw values returned from API:", values)
-
         # Check if data was found
         if not values:
             print('No data found.')

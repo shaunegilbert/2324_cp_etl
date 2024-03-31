@@ -13,11 +13,11 @@ from src.utils.send_email import send_email
 
 def main ():
     try:
-        # sftp_read.main()
+        sftp_read.main()
         sheets_read.main()
-        # c3_wrangle.main()
-        # ehps_wrangle.main()
-        # student_kpi_view.main()
+        c3_wrangle.main()
+        ehps_wrangle.main()
+        student_kpi_view.main()
         # sheets_write.main()
         # write_to_s3.main()
         # del_csv.main()
