@@ -13,7 +13,7 @@ from src.utils.send_email import send_email
 
 def main ():
     try:
-        sftp_read.main()
+        # sftp_read.main()
         sheets_read.main()
         # c3_wrangle.main()
         # ehps_wrangle.main()

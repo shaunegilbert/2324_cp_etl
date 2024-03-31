@@ -25,44 +25,45 @@ def main():
     try:
         load_dotenv()  # Load environment variables
 
-        # Student Agreement Sheet
-        sa_spreadsheet_id = os.getenv('SA_GS_ID')
-        sa_range_name = os.getenv('SA_GS_RANGE')
-        download_sheet_as_csv(sa_spreadsheet_id, sa_range_name, 'student_agreement.csv')
+        # # Student Agreement Sheet
+        # sa_spreadsheet_id = os.getenv('SA_GS_ID')
+        # sa_range_name = os.getenv('SA_GS_RANGE')
+        # download_sheet_as_csv(sa_spreadsheet_id, sa_range_name, 'student_agreement.csv')
 
-        # C3 Attendance Sheet
-        c3_spreadsheet_id = os.getenv('C3_GS_ID')
-        c3_range_name = os.getenv('C3_GS_RANGE')
-        download_sheet_as_csv(c3_spreadsheet_id, c3_range_name, 'c3_attendance.csv')
+        # # C3 Attendance Sheet
+        # c3_spreadsheet_id = os.getenv('C3_GS_ID')
+        # c3_range_name = os.getenv('C3_GS_RANGE')
+        # download_sheet_as_csv(c3_spreadsheet_id, c3_range_name, 'c3_attendance.csv')
         
-        # C3 Attendance Sheet
-        jaws_id = os.getenv('JAWS_ID')
-        jaws_range_name = os.getenv('JAWS_RANGE')
-        download_sheet_as_csv(jaws_id, jaws_range_name, 'jaws_students.csv')
+        # # C3 Attendance Sheet
+        # jaws_id = os.getenv('JAWS_ID')
+        # jaws_range_name = os.getenv('JAWS_RANGE')
+        # download_sheet_as_csv(jaws_id, jaws_range_name, 'jaws_students.csv')
         
-        # C3 Attendance Sheet
-        jaws_wbl_id = os.getenv('JAWS_WBL_ID')
-        jaws_wbl_range_name = os.getenv('JAWS_WBL_RANGE')
-        download_sheet_as_csv(jaws_wbl_id, jaws_wbl_range_name, 'jaws_wbl.csv')
+        # # C3 Attendance Sheet
+        # jaws_wbl_id = os.getenv('JAWS_WBL_ID')
+        # jaws_wbl_range_name = os.getenv('JAWS_WBL_RANGE')
+        # download_sheet_as_csv(jaws_wbl_id, jaws_wbl_range_name, 'jaws_wbl.csv')
         
-        #Internships sheets
-        int_id = os.getenv('JAWS_INT_ID')
-        int_range = os.getenv('JAWS_INT_RANGE')
-        download_sheet_as_csv(int_id, int_range, 'internships.csv')
+        # #Internships sheets
+        # int_id = os.getenv('JAWS_INT_ID')
+        # int_range = os.getenv('JAWS_INT_RANGE')
+        # download_sheet_as_csv(int_id, int_range, 'internships.csv')
         
-        #check-in report from JAWS
-        check_id = os.getenv('CHECK_ID')
-        check_range = os.getenv('CHECK_RANGE')
-        download_sheet_as_csv(check_id, check_range, 'check_in.csv')
+        # #check-in report from JAWS
+        # check_id = os.getenv('CHECK_ID')
+        # check_range = os.getenv('CHECK_RANGE')
+        # download_sheet_as_csv(check_id, check_range, 'check_in.csv')
         
-        #cert report from JAWS
-        cert_id = os.getenv('CERT_ID')
-        cert_range = os.getenv('CERT_RANGE')
-        download_sheet_as_csv(cert_id, cert_range, 'cert.csv')
+        # #cert report from JAWS
+        # cert_id = os.getenv('CERT_ID')
+        # cert_range = os.getenv('CERT_RANGE')
+        # download_sheet_as_csv(cert_id, cert_range, 'cert.csv')
 
         #coursework google sheet
         coursework_id = os.getenv('COURSEWORK_ID')
         coursework_range = os.getenv('COURSEWORK_RANGE')
+        print (coursework_range)
         download_sheet_as_csv(coursework_id, coursework_range, 'course_codes.csv')
 
     except Exception as e:
