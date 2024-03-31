@@ -102,16 +102,16 @@ def final_course_df (base_dirs):
     df_merged = pd.merge(df_merged, df_codes, how='left', left_on='COURSE_NUMBER', right_on='course_code_l')
 
     #drop course code columns
-    df_merged.drop(columns=['COURSE_NUMBER',
-                     'course_code_l'], inplace=True)
+    # df_merged.drop(columns=['COURSE_NUMBER',
+    #                  'course_code_l'], inplace=True)
     
      # Pivot the DataFrame
-    df_pivot = df_merged.pivot_table(index='STUDENT_NUMBER', columns='course_name_l', values='status', aggfunc='first')
+    # df_pivot = df_merged.pivot_table(index='STUDENT_NUMBER', columns='course_name_l', values='status', aggfunc='first')
 
-    df_pivot = pd.merge(students, df_pivot, how='left', on='STUDENT_NUMBER')
+    df_merged = pd.merge(students, df_merged, how='right', on='STUDENT_NUMBER')
 
-    output_file_path = os.path.join(base_dirs['interim'], 'final_course_pivot.csv')
-    df_pivot.to_csv(output_file_path, index=False)
+    output_file_path = os.path.join(base_dirs['interim'], 'final_course.csv')
+    df_merged.to_csv(output_file_path, index=False)
     logging.info(f"Merged DataFrame has been written to {output_file_path}")
     return df_merged
 
