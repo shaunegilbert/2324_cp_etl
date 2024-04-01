@@ -126,6 +126,8 @@ def final_course_df (base_dirs):
     return courses_merged
 
 # Custom function to determine pathway
+import pandas as pd
+
 def determine_pathway(row):
     if row['SCHOOL_NAME'] == 'Hartford Public High School':
         if row['STEM'] == 'Yes' and pd.isna(row['HC']):
@@ -145,31 +147,43 @@ def determine_pathway(row):
             return 'Dual'
         else:
             return 'No Pathway'
+    elif row['SCHOOL_NAME'] == 'Pathways Academy of Technology and Design':
+        if row['STEM'] == 'Yes':
+            return 'STEM'
+        else:
+            return 'No Pathway'
+    elif row['SCHOOL_NAME'] == 'Bulkeley High School':
+        if row['STEM'] == 'Yes' and pd.isna(row['PS']):
+            return 'STEM'
+        elif pd.isna(row['STEM']) and row['PS'] == 'Yes':
+            return 'PS'
+        elif row['STEM'] == 'Yes' and row['PS'] == 'Yes':
+            return 'Dual'
+        else:
+            return 'No Pathway'
+    else:
+        return 'No Pathway'  # Default pathway for any other school not explicitly handled
+
 
 
 def pathway_code_pivot (base_dirs):
     courses_merged = final_course_df(base_dirs)
-
-    # Step 1: Filter to keep only the essential information
-    essential_info_cols = ['STUDENT_NUMBER', 'LAST_NAME', 'FIRST_NAME', 'COHORTYR', 'GRADE_LEVEL', 'SCHOOL_NAME', 'EXITDATE', 'pathway_code']
-    df_filtered = courses_merged[essential_info_cols].copy()
-
-    # Step 2: Remove duplicates to ensure we have a single record for student essential information
-    df_students = df_filtered.drop_duplicates(subset=['STUDENT_NUMBER'])
+    students = pull_students_sub(base_dirs)
 
     # Preparing for pivot: Creating a column to indicate presence of a pathway_code
-    df_filtered['pathway_present'] = 'Yes'
+    courses_merged['pathway_present'] = 'Yes'
 
     # Step 3: Pivot 'pathway_code' to create new columns
-    df_pivot = df_filtered.pivot_table(index='STUDENT_NUMBER', columns='pathway_code', values='pathway_present', aggfunc='first')
+    df_pivot = courses_merged.pivot_table(index='STUDENT_NUMBER', columns='pathway_code', values='pathway_present', aggfunc='first')
+    print(df_pivot)
 
     # Merging the pivoted data back with the student's essential information
-    pathway_code_pivot = pd.merge(df_students.drop(columns=['pathway_code']), df_pivot, on='STUDENT_NUMBER')
+    pathway_code_pivot = pd.merge(students, df_pivot, how='left', on='STUDENT_NUMBER')
 
     pathway_code_pivot['pathway'] = pathway_code_pivot.apply(determine_pathway, axis=1)
 
     output_file_path = os.path.join(base_dirs['interim'], 'final_pathway_code_pivot.csv')
-    pathway_code_pivot.to_csv(output_file_path, index=False)
+    pathway_code_pivot.to_csv(output_file_path, index=True)
     logging.info(f"Merged DataFrame has been written to {output_file_path}")
     return pathway_code_pivot
 
