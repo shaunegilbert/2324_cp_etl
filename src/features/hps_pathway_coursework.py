@@ -175,12 +175,18 @@ def pathway_code_pivot (base_dirs):
 
     # Step 3: Pivot 'pathway_code' to create new columns
     df_pivot = courses_merged.pivot_table(index='STUDENT_NUMBER', columns='pathway_code', values='pathway_present', aggfunc='first')
-    print(df_pivot)
+
+    # If they differ, convert them to the same type, typically string if there's inconsistency:
+    students['STUDENT_NUMBER'] = students['STUDENT_NUMBER'].astype(str)
+    df_pivot = df_pivot.reset_index()  # Reset index if STUDENT_NUMBER is the index
+    df_pivot['STUDENT_NUMBER'] = df_pivot['STUDENT_NUMBER'].astype(str)
 
     # Merging the pivoted data back with the student's essential information
     pathway_code_pivot = pd.merge(students, df_pivot, how='left', on='STUDENT_NUMBER')
 
     pathway_code_pivot['pathway'] = pathway_code_pivot.apply(determine_pathway, axis=1)
+
+    print(courses_merged['STUDENT_NUMBER'].dtype, students['STUDENT_NUMBER'].dtype)
 
     output_file_path = os.path.join(base_dirs['interim'], 'final_pathway_code_pivot.csv')
     pathway_code_pivot.to_csv(output_file_path, index=True)
