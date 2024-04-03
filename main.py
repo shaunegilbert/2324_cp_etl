@@ -7,7 +7,8 @@ from src.data import (sftp_read,
                       write_to_s3)
 from src.features import (c3_wrangle, 
                           ehps_wrangle,
-                          student_kpi_view)
+                          student_kpi_view,
+                          hps_pathway_coursework)
 from src.utils import del_csv
 from src.utils.send_email import send_email
 
@@ -18,6 +19,7 @@ def main ():
         c3_wrangle.main()
         ehps_wrangle.main()
         student_kpi_view.main()
+        hps_pathway_coursework.main()
         # sheets_write.main()
         # write_to_s3.main()
         # del_csv.main()

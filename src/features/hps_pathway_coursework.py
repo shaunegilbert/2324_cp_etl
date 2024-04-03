@@ -61,7 +61,8 @@ def pull_course_codes (base_dirs):
 def pull_current_courses (base_dirs):
     file_path = os.path.join(base_dirs['raw'], 'current_courses.csv')
     columns = ['STUDENT_NUMBER',
-               'COURSE_NUMBER']
+               'COURSE_NUMBER',
+               'TERMID']
     df=read_csv_column(file_path, columns)
 
     # Add a new column 'currently_enrolled' with value 'enrolled'
@@ -113,6 +114,9 @@ def final_course_df (base_dirs):
 
     # Filter rows based on column: 'SCHOOL_NAME' -- drop records where school is NaN
     courses_merged = courses_merged[courses_merged['SCHOOL_NAME'].notna()]
+
+    # filter rows based on col 'TERMID' -- drop records wehere TERMID does not start with 33
+    courses_merged = courses_merged[courses_merged['TERMID'].astype(str).str.startswith('33')]
 
     # filter rows based on column 'EXITDATE' -- drop any records with exit dates
     courses_merged = courses_merged[courses_merged['EXITDATE'].isna()]
