@@ -166,7 +166,7 @@ def pull_naf_students(base_dirs: Dict[str, str]) -> pd.DataFrame:
         pd.DataFrame: The naf_students DataFrame.
     """
     file_path = os.path.join(base_dirs['raw'], 'naf_students.csv')
-    columns = ['Student ID', 'Academies', 'NTC Progress', 'Is NAF', 'Graduated', 'Active']
+    columns = ['Student ID', 'First Name', 'Last Name', 'Academies', 'NTC Progress', 'Is NAF', 'Graduated', 'Active']
     df = read_csv_column(file_path, columns, dtype={"STUDENT_NUMBER": "string"})
 
     return df
@@ -258,7 +258,8 @@ def all_source_merge(base_dirs: Dict[str, str]) -> pd.DataFrame:
     
     pathway_counts = pathway_course_counts(base_dirs)[['STUDENT_NUMBER', 'HC', 'IF', 'JM', 'PS', 'STEM']]
     
-    naf_students = pull_naf_students(base_dirs)[['Student ID', 'Academies', 'Active']]
+    naf_students = pull_naf_students(base_dirs)[['Student ID', 'First Name', 'Last Name', 'Academies', 'Active']]
+    naf_students['Student ID'] = naf_students['Student ID'].astype(str).str.strip()
     naf_students = naf_students.rename(columns={'Student ID': 'STUDENT_NUMBER'})
     
     student_agreements = pull_student_agreement_sub(base_dirs)
@@ -273,17 +274,15 @@ def all_source_merge(base_dirs: Dict[str, str]) -> pd.DataFrame:
 
     # Merging all dataframes on 'STUDENT_NUMBER' and renaming the final merged DataFrame
     pathway_identification = students.merge(pathway_counts, on='STUDENT_NUMBER', how='left')
-    pathway_identification = pathway_identification.merge(naf_students, on='STUDENT_NUMBER', how='left')
     pathway_identification = pathway_identification.merge(student_agreements, on='STUDENT_NUMBER', how='left')
     pathway_identification = pathway_identification.merge(wbl_counts, on='STUDENT_NUMBER', how='left')
+    pathway_identification = pathway_identification.merge(naf_students, on='STUDENT_NUMBER', how='outer')
 
     # Replace all 0 with blank in the final DataFrame
     pathway_identification = pathway_identification.replace(0, '')
 
     output_file_path = os.path.join(base_dirs['processed'], 'pathway_identification.csv')
     save_dataframe_to_csv(pathway_identification, output_file_path)
-
-
 
     return pathway_identification
 
