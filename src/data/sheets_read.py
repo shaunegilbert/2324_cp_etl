@@ -63,8 +63,12 @@ def main():
         #coursework google sheet
         coursework_id = os.getenv('COURSEWORK_ID')
         coursework_range = os.getenv('COURSEWORK_RANGE')
-        print (coursework_range)
         download_sheet_as_csv(coursework_id, coursework_range, 'course_codes.csv')
+
+        #naf_students
+        naf_id = os.getenv('NAF_ID')
+        naf_range =  os.getenv('NAF_RANGE')
+        download_sheet_as_csv(naf_id, naf_range, 'naf_students.csv')
 
     except Exception as e:
         print("Handling error in main: stopping the script")

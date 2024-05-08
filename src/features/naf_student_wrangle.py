@@ -62,6 +62,21 @@ def pull_students_sub(base_dirs: Dict[str, str]) -> pd.DataFrame:
     save_dataframe_to_csv(df, output_file_path)
     return df
 
+def pull_student_agreement_sub(base_dirs: Dict[str, str]) -> pd.DataFrame:
+    """
+    Pulls jaws_students_report from a CSV file and saves it to an interim file.
+
+    Args:
+        base_dirs (Dict[str, str]): A dictionary containing base directories.
+
+    Returns:
+        pd.DataFrame: jaws_students DataFrame.
+    """
+    file_path = os.path.join(base_dirs['raw'], 'student_agreement.csv')
+    columns = ['Student ID Number', 'district code', 'Please select your Career Pathway' ]
+    student_agreement = read_csv_column(file_path, columns, dtype={"Student ID Number": "string"})
+    return student_agreement
+
 
 def pull_course_codes(base_dirs: Dict[str, str]) -> pd.DataFrame:
     """
@@ -124,6 +139,38 @@ def pull_completed_courses(base_dirs: Dict[str, str]) -> pd.DataFrame:
     save_dataframe_to_csv(df, output_file_path)
     return df
 
+def pull_wbl_counts(base_dirs: Dict[str, str]) -> pd.DataFrame:
+    """
+    Pulls wbl counts from a CSV file, filters them, and saves to an interim file.
+
+    Args:
+        base_dirs (Dict[str, str]): A dictionary containing base directories.
+
+    Returns:
+        pd.DataFrame: The wbl counts DataFrame.
+    """
+    file_path = os.path.join(base_dirs['interim'], 'wbl_counts.csv')
+    columns = ['gt_id', 'WBL_count']
+    wbl_counts = read_csv_column(file_path, columns)
+    return wbl_counts
+
+
+def pull_naf_students(base_dirs: Dict[str, str]) -> pd.DataFrame:
+    """
+    Pulls naf_students from a CSV file, filters them, and saves to an interim file.
+
+    Args:
+        base_dirs (Dict[str, str]): A dictionary containing base directories.
+
+    Returns:
+        pd.DataFrame: The naf_students DataFrame.
+    """
+    file_path = os.path.join(base_dirs['raw'], 'naf_students.csv')
+    columns = ['Student ID', 'Academies', 'NTC Progress', 'Is NAF', 'Graduated', 'Active']
+    df = read_csv_column(file_path, columns, dtype={"STUDENT_NUMBER": "string"})
+
+    return df
+
 
 def final_course_df(base_dirs: Dict[str, str]) -> pd.DataFrame:
     """
@@ -146,7 +193,7 @@ def final_course_df(base_dirs: Dict[str, str]) -> pd.DataFrame:
     courses_merged = pd.merge(df_students, courses_merged, how='right', on='STUDENT_NUMBER')
 
     courses_merged = courses_merged[courses_merged['SCHOOL_NAME'].notna()]
-    courses_merged = courses_merged[courses_merged['EXITDATE'].isna()]
+    # courses_merged = courses_merged[courses_merged['EXITDATE'].isna()]
     courses_merged = courses_merged.astype({'STUDENT_NUMBER': 'string'})
 
     # Remove duplicate rows
@@ -159,18 +206,19 @@ def final_course_df(base_dirs: Dict[str, str]) -> pd.DataFrame:
     return courses_merged
 
 
-def create_student_pathway_count_df(courses_merged: pd.DataFrame) -> pd.DataFrame:
+def pathway_course_counts(base_dirs: Dict[str, str]) -> pd.DataFrame:
     """
-    Creates a DataFrame where each student has an individual row,
-    and includes columns for each unique 'pathway_code' with a count
-    of how many courses they completed in each pathway.
+    Generates a DataFrame with pathway code counts for each student from merged course data,
+    then saves the DataFrame to a CSV file.
 
     Args:
-        courses_merged (pd.DataFrame): The input merged DataFrame.
+        base_dirs (Dict[str, str]): A dictionary containing base directories.
 
     Returns:
         pd.DataFrame: The output DataFrame with pathway code counts.
     """
+    # Generate the merged courses DataFrame
+    courses_merged = final_course_df(base_dirs)
 
     # Select relevant columns
     student_info_columns = ['STUDENT_NUMBER', 'LAST_NAME', 'FIRST_NAME',
@@ -187,27 +235,57 @@ def create_student_pathway_count_df(courses_merged: pd.DataFrame) -> pd.DataFram
 
     # Merge with original student information
     student_info = courses_merged[student_info_columns].drop_duplicates()
-    student_pathway_counts = pd.merge(student_info, pathway_counts_pivot, on='STUDENT_NUMBER', how='left')
+    pathway_course_counts = pd.merge(student_info, pathway_counts_pivot, on='STUDENT_NUMBER', how='left')
 
-    # Fill NaNs with 0 for any missing pathway counts
-    student_pathway_counts = student_pathway_counts.fillna(0)
+    # # Fill NaNs with 0 for any missing pathway counts
+    # pathway_course_counts = pathway_course_counts.fillna(0)
 
-    return student_pathway_counts
+    # Save the DataFrame to a CSV file
+    output_file_path = os.path.join(base_dirs['interim'], 'pathway_course_counts.csv')
+    save_dataframe_to_csv(pathway_course_counts, output_file_path)
+
+    return pathway_course_counts
 
 
-def process_and_save_pathway_counts(base_dirs: Dict[str, str]):
+def all_source_merge(base_dirs: Dict[str, str]) -> pd.DataFrame:
     """
-    Processes the final course DataFrame and creates a DataFrame with pathway code counts for each student.
+    Merges students, student_pathway_counts, and naf_students DataFrames on student_number.
 
     Args:
         base_dirs (Dict[str, str]): A dictionary containing base directories.
     """
-    courses_merged = final_course_df(base_dirs)
-    student_pathway_counts = create_student_pathway_count_df(courses_merged)
+    students = pull_students_sub(base_dirs)
+    
+    pathway_counts = pathway_course_counts(base_dirs)[['STUDENT_NUMBER', 'HC', 'IF', 'JM', 'PS', 'STEM']]
+    
+    naf_students = pull_naf_students(base_dirs)[['Student ID', 'Academies', 'Active']]
+    naf_students = naf_students.rename(columns={'Student ID': 'STUDENT_NUMBER'})
+    
+    student_agreements = pull_student_agreement_sub(base_dirs)
+    student_agreements = student_agreements[student_agreements['district code'] == 'hps']
+    student_agreements = student_agreements.rename(columns={'Student ID Number': 'STUDENT_NUMBER'})
+    student_agreements = student_agreements.drop(columns=['district code']) 
 
-    output_file_path = os.path.join(base_dirs['processed'], 'student_pathway_counts.csv')
-    save_dataframe_to_csv(student_pathway_counts, output_file_path)
+    wbl_counts = pull_wbl_counts(base_dirs)
+    wbl_counts = wbl_counts[wbl_counts['gt_id'].str.startswith('hps')]
+    wbl_counts['gt_id'] = wbl_counts['gt_id'].str.replace('hps', '', n=1)  # Remove the initial 'hps' from gt_id
+    wbl_counts = wbl_counts.rename(columns={'gt_id': 'STUDENT_NUMBER'})
 
+    # Merging all dataframes on 'STUDENT_NUMBER' and renaming the final merged DataFrame
+    pathway_identification = students.merge(pathway_counts, on='STUDENT_NUMBER', how='left')
+    pathway_identification = pathway_identification.merge(naf_students, on='STUDENT_NUMBER', how='left')
+    pathway_identification = pathway_identification.merge(student_agreements, on='STUDENT_NUMBER', how='left')
+    pathway_identification = pathway_identification.merge(wbl_counts, on='STUDENT_NUMBER', how='left')
+
+    # Replace all 0 with blank in the final DataFrame
+    pathway_identification = pathway_identification.replace(0, '')
+
+    output_file_path = os.path.join(base_dirs['processed'], 'pathway_identification.csv')
+    save_dataframe_to_csv(pathway_identification, output_file_path)
+
+
+
+    return pathway_identification
 
 def main():
     """
@@ -220,7 +298,8 @@ def main():
             'interim': 'data/interim'
         }
 
-        process_and_save_pathway_counts(base_dirs)
+        pathway_course_counts(base_dirs)
+        all_source_merge(base_dirs)
 
     except Exception as e:
         logging.error(f"An error occurred: {e}")
