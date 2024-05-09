@@ -56,8 +56,9 @@ def pull_students_sub(base_dirs: Dict[str, str]) -> pd.DataFrame:
         pd.DataFrame: The student DataFrame.
     """
     file_path = os.path.join(base_dirs['raw'], 'students.csv')
-    columns = ['STUDENT_NUMBER', 'LAST_NAME', 'FIRST_NAME', 'COHORTYR', 'GRADE_LEVEL', 'SCHOOL_NAME', 'EXITDATE']
+    columns = ['STUDENT_NUMBER', 'LAST_NAME', 'FIRST_NAME', 'COHORTYR', 'GRADE_LEVEL', 'SCHOOL_NAME', 'HOUSE', 'EXITDATE']
     df = read_csv_column(file_path, columns, dtype={"STUDENT_NUMBER": "string"})
+    df = df.drop_duplicates(keep='first')
     output_file_path = os.path.join(base_dirs['interim'], 'hps_students_for_coursework.csv')
     save_dataframe_to_csv(df, output_file_path)
     return df
@@ -154,6 +155,21 @@ def pull_wbl_counts(base_dirs: Dict[str, str]) -> pd.DataFrame:
     wbl_counts = read_csv_column(file_path, columns)
     return wbl_counts
 
+def pull_internship_counts(base_dirs: Dict[str, str]) -> pd.DataFrame:
+    """
+    Pulls internship counts from a CSV file, filters them, and saves to an interim file.
+
+    Args:
+        base_dirs (Dict[str, str]): A dictionary containing base directories.
+
+    Returns:
+        pd.DataFrame: The internship counts DataFrame.
+    """
+    file_path = os.path.join(base_dirs['interim'], 'internships_count.csv')
+    columns = ['gt_id', 'internship_count']
+    internship_counts = read_csv_column(file_path, columns)
+    return internship_counts
+
 
 def pull_naf_students(base_dirs: Dict[str, str]) -> pd.DataFrame:
     """
@@ -222,7 +238,7 @@ def pathway_course_counts(base_dirs: Dict[str, str]) -> pd.DataFrame:
 
     # Select relevant columns
     student_info_columns = ['STUDENT_NUMBER', 'LAST_NAME', 'FIRST_NAME',
-                            'COHORTYR', 'GRADE_LEVEL', 'SCHOOL_NAME', 'EXITDATE']
+                            'COHORTYR', 'GRADE_LEVEL', 'SCHOOL_NAME', 'HOUSE', 'EXITDATE']
 
     # Group by student and pathway_code, then count
     pathway_counts = courses_merged.groupby(['STUDENT_NUMBER', 'pathway_code']).size().reset_index(name='count')
@@ -255,7 +271,7 @@ def all_source_merge(base_dirs: Dict[str, str]) -> pd.DataFrame:
         base_dirs (Dict[str, str]): A dictionary containing base directories.
     """
     students = pull_students_sub(base_dirs)
-    
+
     pathway_counts = pathway_course_counts(base_dirs)[['STUDENT_NUMBER', 'HC', 'IF', 'JM', 'PS', 'STEM']]
     
     naf_students = pull_naf_students(base_dirs)[['Student ID', 'First Name', 'Last Name', 'Academies', 'Active']]
@@ -272,17 +288,34 @@ def all_source_merge(base_dirs: Dict[str, str]) -> pd.DataFrame:
     wbl_counts['gt_id'] = wbl_counts['gt_id'].str.replace('hps', '', n=1)  # Remove the initial 'hps' from gt_id
     wbl_counts = wbl_counts.rename(columns={'gt_id': 'STUDENT_NUMBER'})
 
+    internship_counts = pull_internship_counts(base_dirs)
+    internship_counts = internship_counts[internship_counts['gt_id'].str.startswith('hps')]
+    internship_counts['gt_id'] = internship_counts['gt_id'].str.replace('hps', '', n=1)  # Remove the initial 'hps' from gt_id
+    internship_counts = internship_counts.rename(columns={'gt_id': 'STUDENT_NUMBER'})
+
     # Merging all dataframes on 'STUDENT_NUMBER' and renaming the final merged DataFrame
     pathway_identification = students.merge(pathway_counts, on='STUDENT_NUMBER', how='left')
     pathway_identification = pathway_identification.merge(student_agreements, on='STUDENT_NUMBER', how='left')
     pathway_identification = pathway_identification.merge(wbl_counts, on='STUDENT_NUMBER', how='left')
+    pathway_identification = pathway_identification.merge(internship_counts, on='STUDENT_NUMBER', how='left')
     pathway_identification = pathway_identification.merge(naf_students, on='STUDENT_NUMBER', how='outer')
 
     # Replace all 0 with blank in the final DataFrame
     pathway_identification = pathway_identification.replace(0, '')
 
+    pathway_identification = pathway_identification.drop_duplicates(keep='first')
+
     output_file_path = os.path.join(base_dirs['processed'], 'pathway_identification.csv')
     save_dataframe_to_csv(pathway_identification, output_file_path)
+
+    duplicates = pathway_identification[pathway_identification.duplicated(keep=False)]
+    if not duplicates.empty:
+        print("Duplicate rows found:")
+        print(duplicates)
+    else:
+        print("No duplicates found.")
+
+    # pathway_identification.to_clipboard(index=False)
 
     return pathway_identification
 
