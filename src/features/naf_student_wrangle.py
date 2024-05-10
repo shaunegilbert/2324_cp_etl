@@ -315,7 +315,7 @@ def all_source_merge(base_dirs: Dict[str, str]) -> pd.DataFrame:
     else:
         print("No duplicates found.")
 
-    # pathway_identification.to_clipboard(index=False)
+    pathway_identification.to_clipboard(index=False)
 
     return pathway_identification
 
