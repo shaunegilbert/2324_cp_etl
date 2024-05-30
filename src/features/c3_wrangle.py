@@ -81,8 +81,8 @@ def process_ect_c3():
         # Create a DataFrame with unique gt_ids
         unique_gt_ids = df[['Linked field: Workspace number', 
                             'Linked field: Name', 
-                            'Linked field: Subcategory',
-                            'Attendance'
+                            'Linked field: Subcategory'
+                            # 'Attendance'
                             ]].fillna('NaN').drop_duplicates()
         
         # Pivot the table for attendance

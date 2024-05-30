@@ -15,12 +15,12 @@ def main ():
     try:
         sftp_read.main()
         sheets_read.main()
-        # c3_wrangle.main()
-        # ehps_wrangle.main()
-        # student_kpi_view.main()
-        # sheets_write.main()
-        # write_to_s3.main()
-        # del_csv.main()
+        c3_wrangle.main()
+        ehps_wrangle.main()
+        student_kpi_view.main()
+        sheets_write.main()
+        write_to_s3.main()
+        del_csv.main()
         
         # Send a success email
         # send_email('shaune.gilbert@readyct.org', 'CP ETL Script Execution Successful', 'The CP ETL script ran successfully.')
@@ -32,7 +32,7 @@ def main ():
         logging.error(f"Script failed to run. Error: {str(e)}")
 
         # Send an error email
-        # send_email('shaune.gilbert@readyct.org', 'CP ETL Script Execution Failed', f"The CP ETL script failed to run. Error: {str(e)}")
+        send_email('shaune.gilbert@readyct.org', 'CP ETL Script Execution Failed', f"The CP ETL script failed to run. Error: {str(e)}")
         print('error')
         sys.exit(1)
         
