@@ -60,6 +60,11 @@ def main():
         cert_range = os.getenv('CERT_RANGE')
         download_sheet_as_csv(cert_id, cert_range, 'cert.csv')
 
+        #cert report from JAWS
+        ect_c3_id = os.getenv('ECT_C3_ID')
+        ect_c3_range = os.getenv('ECT_C3_RANGE')
+        download_sheet_as_csv(ect_c3_id, ect_c3_range, 'ect_c3.csv')
+
     except Exception as e:
         print("Handling error in main: stopping the script")
         traceback.print_exc()
