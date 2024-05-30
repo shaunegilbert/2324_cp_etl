@@ -75,13 +75,16 @@ def process_ect_c3():
 
         # Load data into a DataFrame
         df = pd.read_csv(input_path)
+        # print(df.columns)
 
         df['Attendance'] = 'Y'
 
         # Create a DataFrame with unique gt_ids
         unique_gt_ids = df[['Linked field: Workspace number', 
                             'Linked field: Name', 
-                            'Linked field: Subcategory'
+                            'Linked field: Subcategory',
+                            'Linked field: Pipeline',
+                            'Linked field: Pipeline start'
                             # 'Attendance'
                             ]].fillna('NaN').drop_duplicates()
         
@@ -102,6 +105,8 @@ def process_ect_c3():
 
         # Merge with unique gt_ids DataFrame
         final_table = pd.merge(unique_gt_ids, attendance_pivot, on=['Linked field: Workspace number', 'Linked field: Name', 'Linked field: Subcategory'])
+        # print(final_table.columns)
+        # print(final_table.columns[5:15])
         # final_table.to_csv (output_path_interim, index=False)
         
         # Calculate attendance percentage
