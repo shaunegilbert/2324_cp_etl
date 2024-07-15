@@ -22,7 +22,7 @@ def main ():
         student_kpi_view.main()
         hps_pathway_coursework.main()
         naf_student_wrangle.main()
-        # sheets_write.main()
+        sheets_write.main()
         # write_to_s3.main()
         # del_csv.main()
         
