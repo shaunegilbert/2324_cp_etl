@@ -59,7 +59,7 @@ def process_jaws_students(base_dirs):
     Processes the jaws_students.csv file.
     """
     file_path = os.path.join(base_dirs['raw'], 'jaws_students.csv')
-    columns = ['Workspace Name', 'gt_id', 'Subcategory', '23-24 CP Student Agreement', 'Pathways 23-24']
+    columns = ['Workspace Name', 'gt_id', 'Subcategory', '23-24 CP Student Agreement', 'Pathways 23-24', 'Grade']
     df = read_csv_column(file_path, columns)
     output_file_path = os.path.join(base_dirs['interim'], 'jaws_students_interim.csv')
     df.to_csv(output_file_path, index=False)

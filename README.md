@@ -6,6 +6,25 @@ sudo hwclock -s
 eval "$(ssh-agent -s)"
 ssh-add ~/.ssh/id_rsa
 
+#directions on how to build new docker file 
+# Step into your project directory
+cd /path/to/your/project
+
+# Build a new Docker image with the custom Dockerfile
+docker build -t s50_etl_image:latest -f Dockerfile.cp_etl .
+
+# Stop the old container
+docker stop cp_etl_container
+
+# Remove the old container
+docker rm cp_etl_container
+
+# Remove the old image
+docker rmi cp_etl_image:old_tag
+
+# Run a new container with the new image
+docker run -d --name cp_etl_container cp_etl_image:latest
+
 # setting up new docker container to run updated code
 
 # 1 build new image
