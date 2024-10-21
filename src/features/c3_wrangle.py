@@ -83,7 +83,7 @@ def process_ect_c3():
         unique_gt_ids = df[['Linked field: Workspace number', 
                             'Linked field: Name', 
                             'Linked field: Subcategory',
-                            'Linked field: Pipeline',
+                            'Linked field: 23-24 Pipeline',
                             'Linked field: Pipeline start'
                             # 'Attendance'
                             ]].fillna('NaN').drop_duplicates()
